@@ -1,32 +1,20 @@
-FROM php:8.2.12-fpm
+FROM richarvey/nginx-php-fpm:3.1.6
 
-# Install required system dependencies and PHP extensions
-RUN apt-get update && apt-get install -y \
-    zip unzip git curl libpng-dev libjpeg-dev libfreetype6-dev \
-    libonig-dev libxml2-dev libzip-dev \
-    && docker-php-ext-install bcmath \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl gd zip
-
-
-
-# Set working directory
-WORKDIR /var/www/html
-
-# Copy the application files
 COPY . .
 
-# Install Composer and dependencies
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && composer install --no-dev --optimize-autoloader
+# Image config
+ENV SKIP_COMPOSER 1
+ENV WEBROOT /var/www/html/public
+ENV PHP_ERRORS_STDERR 1
+ENV RUN_SCRIPTS 1
+ENV REAL_IP_HEADER 1
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html
+# Laravel config
+ENV APP_ENV production
+ENV APP_DEBUG false
+ENV LOG_CHANNEL stderr
 
+# Allow composer to run as root
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
-
-# Expose port 80
-EXPOSE 80
-
-# Start PHP-FPM and Nginx
-CMD ["php-fpm"]
+CMD ["/start.sh"]
