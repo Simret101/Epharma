@@ -13,11 +13,11 @@ Route::get('/messages', [MessageController::class, 'getAllMessages']);
 Route::post('/messages/send', [MessageController::class, 'sendMessage']);
 Route::get('/messages/{userId}', [MessageController::class, 'getMessages']);
 Route::delete('/messages/{id}', [MessageController::class, 'deleteMessage']);
-Route::post('/upload', [ImageController::class, 'store']); // Create
-Route::get('/images', [ImageController::class, 'index']); // Read all
-Route::get('/images/{id}', [ImageController::class, 'show']); // Read single
-Route::post('/images/{id}', [ImageController::class, 'update']); // Update
-Route::delete('/images/{id}', [ImageController::class, 'destroy']); // Delete
+Route::post('/upload', [ImageController::class, 'store']);
+Route::get('/images', [ImageController::class, 'index']); 
+Route::get('/images/{id}', [ImageController::class, 'show']);
+Route::post('/images/{id}', [ImageController::class, 'update']);
+Route::delete('/images/{id}', [ImageController::class, 'destroy']);
 Route::apiResource('pharmacists', PharmacistController::class);
 Route::apiResource('orders', OrderController::class);
 // Payment Routes
