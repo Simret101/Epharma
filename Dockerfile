@@ -1,20 +1,27 @@
-FROM richarvey/nginx-php-fpm:3.1.6
+# Use PHP CLI with required extensions
+FROM php:8.2-cli
 
+# Set working directory
+WORKDIR /var/www
+
+# Copy project files
 COPY . .
 
-# Image config
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+# Install system dependencies and PHP extensions
+RUN apt-get update && apt-get install -y \
+    zip \
+    unzip \
+    git \
+    && docker-php-ext-install pdo pdo_mysql bcmath
 
-# Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Allow composer to run as root
-ENV COMPOSER_ALLOW_SUPERUSER 1
+# Install Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-CMD ["/start.sh"]
+# Expose port
+EXPOSE 8000
+
+# Start Laravel server
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
